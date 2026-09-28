@@ -1,0 +1,65 @@
+version: 2
+
+project_name: kubectl-bcm-audit
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kubedrift-audit
+    main: ./cmd/kubedrift-audit
+    binary: kubedrift-audit
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Version={{.Version}}
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Commit={{.Commit}}
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Date={{.Date}}
+  - id: kubectl-bcm-audit
+    main: ./cmd/kubedrift-audit
+    binary: kubectl-bcm-audit
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Version={{.Version}}
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Commit={{.Commit}}
+      - -X github.com/sysrqio/kubectl-bcm-audit/internal/version.Date={{.Date}}
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    builds:
+      - kubedrift-audit
+      - kubectl-bcm-audit
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+
+release:
+  github:
+    owner: sysrqio
+    name: kubectl-bcm-audit
