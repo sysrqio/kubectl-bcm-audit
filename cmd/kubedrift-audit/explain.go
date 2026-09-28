@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -53,7 +52,7 @@ func newExplainCmd() *cobra.Command {
 			if err != nil {
 				return codedError{code: 1, msg: err.Error()}
 			}
-			return output.WritePVCDetail(os.Stdout, output.ParseFormat(outputFormat), detail)
+			return output.WritePVCDetail(cmd.OutOrStdout(), output.ParseFormat(outputFormat), detail)
 		},
 	}
 	cmd.Flags().StringVar(&namespace, "namespace", "", "Namespace for PVC name lookup")

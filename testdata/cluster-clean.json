@@ -1,0 +1,49 @@
+{
+  "namespaces": ["app-prod", "velero"],
+  "pvcs": [
+    {
+      "namespace": "app-prod",
+      "name": "postgres-data-postgres-0",
+      "storageClass": "fast-ssd",
+      "size": "100Gi",
+      "usedBy": [{"kind": "StatefulSet", "name": "postgres"}]
+    }
+  ],
+  "statefulsets": [
+    {
+      "namespace": "app-prod",
+      "name": "postgres",
+      "pvcNames": ["postgres-data-postgres-0"]
+    }
+  ],
+  "deployments": [],
+  "velero": {
+    "namespace": "velero",
+    "schedules": [
+      {
+        "name": "daily-app-prod",
+        "includedNamespaces": ["app-prod"],
+        "includedResources": ["persistentvolumeclaims", "persistentvolumes"],
+        "paused": false,
+        "ttl": "720h"
+      }
+    ],
+    "backups": [
+      {
+        "name": "daily-app-prod-202609280100",
+        "schedule": "daily-app-prod",
+        "status": "Completed",
+        "startedAt": "2026-09-28T01:00:00Z",
+        "completedAt": "2026-09-28T01:05:00Z"
+      }
+    ],
+    "restores": [
+      {
+        "name": "drill-app-prod-sep",
+        "backupName": "daily-app-prod-202609280100",
+        "status": "Completed",
+        "completedAt": "2026-09-20T10:00:00Z"
+      }
+    ]
+  }
+}

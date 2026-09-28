@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -35,7 +36,7 @@ func newScanCmd() *cobra.Command {
 		Use:   "scan",
 		Short: "Scan cluster or fixture for backup coverage drift",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runScan(f)
+			return runScan(cmd.OutOrStdout(), f)
 		},
 	}
 	cmd.Flags().StringVar(&f.namespace, "namespace", "", "Limit audit to a single namespace")
@@ -49,7 +50,7 @@ func newScanCmd() *cobra.Command {
 	return cmd
 }
 
-func runScan(f *scanFlags) error {
+func runScan(out io.Writer, f *scanFlags) error {
 	var snap *cluster.Snapshot
 	var err error
 	ctx := context.Background()
@@ -78,7 +79,7 @@ func runScan(f *scanFlags) error {
 		Now:      time.Now().UTC(),
 	}
 	rep := audit.Run(snap, opt)
-	if err := output.Write(os.Stdout, output.ParseFormat(f.outputFormat), rep); err != nil {
+	if err := output.Write(out, output.ParseFormat(f.outputFormat), rep); err != nil {
 		return err
 	}
 	if f.failOnDrift && rep.HasDrift {
