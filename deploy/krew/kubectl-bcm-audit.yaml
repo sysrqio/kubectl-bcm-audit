@@ -1,0 +1,23 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: bcm-audit
+spec:
+  version: v0.1.0
+  platforms:
+    - selector:
+        matchLabels:
+          os: linux
+          arch: amd64
+      uri: https://github.com/sysrqio/kubectl-bcm-audit/releases/download/v0.1.0/kubectl-bcm-audit_linux_amd64.tar.gz
+      sha256: PLACEHOLDER
+      files:
+        - from: kubedrift-audit
+          to: .
+      bin: kubedrift-audit
+  shortDescription: Audit Velero backup coverage for BCM/DORA
+  description: |
+    Local audit of PVC backup schedules and restore evidence against Velero.
+    Runs fully offline with --fixture for CI and air-gapped environments.
+  caveats: |
+    Requires Velero CRDs in-cluster when not using --fixture.
